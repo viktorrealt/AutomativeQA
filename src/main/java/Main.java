@@ -40,7 +40,7 @@ public class Main {
 
         for (int i = 1; i <= searchResultsCount; i++)
         {
-            WebElement searchResults = wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.xpath("/html/body/div/ol/li[" + i + "]/div/h2/a"))));
+            WebElement searchResults = wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.xpath("//li[" + i + "]/div/h2/a"))));
             System.out.println(searchResults.getText());
         }
 
