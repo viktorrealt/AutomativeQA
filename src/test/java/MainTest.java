@@ -100,9 +100,13 @@ public class MainTest {
         for (WebElement s: searchResults)
         {
                 counter++;
+            Reporter.log("Check search query in results text");
+            Assert.assertTrue(s.getText().contains(searchQuery));
         }
-        Reporter.log("Check search query in results title");
+        Reporter.log("Check count of search query in results title");
         Assert.assertEquals(resultsPerPage, counter); //проверяем наличие 10 ключевых слов в заголовках поисковой выдачи
+        Reporter.log("Check search query in page title");
+        Assert.assertTrue(driver.getTitle().contains(searchQuery));
 
     }
     @AfterSuite
