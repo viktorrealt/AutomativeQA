@@ -1,0 +1,3 @@
+http://bing.com;automative
+http://bing.com;sometext
+http://bing.com;blablabla
