@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class MainTest {
     WebDriver driver;
-
+    String linkCssPattern = "html body div#b_content ol#b_results li.b_algo h2";
     @DataProvider
     public Object[][] getData()
     {
@@ -60,7 +60,7 @@ public class MainTest {
         wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
 
         List<WebElement> searchResults;
-        searchResults = (driver.findElements(By.cssSelector("html body div#b_content ol#b_results li.b_algo h2")));
+        searchResults = (driver.findElements(By.cssSelector(linkCssPattern)));
         for (WebElement s: searchResults)
         {
             System.out.println(s.getText());
@@ -95,7 +95,7 @@ public class MainTest {
         wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
 
         List<WebElement> searchResults;
-        searchResults = (driver.findElements(By.cssSelector("html body div#b_content ol#b_results li.b_algo h2")));
+        searchResults = (driver.findElements(By.cssSelector(linkCssPattern)));
         int counter = 0;
         for (WebElement s: searchResults)
         {
