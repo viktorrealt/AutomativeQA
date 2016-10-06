@@ -7,16 +7,20 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
 /**
- * Created by admin on 10/3/16.
+ * Created by Ириша on 06.10.2016.
  */
-public class MainTest {
+public class CountOfLinks {
     WebDriver driver;
     String linkCssPattern = "html body div#b_content ol#b_results li.b_algo h2";
+
     @DataProvider
     public Object[][] getData()
     {
@@ -30,19 +34,17 @@ public class MainTest {
         Reporter.log("Initialize Firefox Driver");
         driver = new FirefoxDriver();
     }
+
     @Test(dataProvider="getData")
-    public void testMain(String url, final String searchQuery) throws Exception
+    public void checkResultsCount (String url, final String searchQuery)
     {
-        Reporter.log("Open URL " + url);
+        int resultsPerPage = 10;
         driver.navigate().to(url);
-        Reporter.log("Try to find search field by name");
         By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
         WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
         input.clear(); // очищаем поле ввода
-        Reporter.log("Send search query " + searchQuery);
         input.sendKeys(searchQuery);
         WebElement searchButton = driver.findElement(By.name("go"));
-        Reporter.log("Click search button");
         searchButton.click();
 
         WebDriverWait wait = new WebDriverWait(driver, 10);
@@ -51,9 +53,8 @@ public class MainTest {
                 return webDriver.getTitle().contains(searchQuery);
             }
         });
-
-        String title = driver.getTitle();
         Reporter.log("sout page title");
+        String title = driver.getTitle();
         System.out.println(title);
 
 
@@ -61,17 +62,22 @@ public class MainTest {
 
         List<WebElement> searchResults;
         searchResults = (driver.findElements(By.cssSelector(linkCssPattern)));
+        int counter = 0;
         for (WebElement s: searchResults)
         {
-            System.out.println(s.getText());
+            counter++;
+            Reporter.log("Check search query in results text");
+            Assert.assertTrue(s.getText().contains(searchQuery));
         }
-        //driver.quit();
-    }
+        Reporter.log("Check count of search query in results title");
+        Assert.assertEquals(resultsPerPage, counter); //проверяем наличие 10 ключевых слов в заголовках поисковой выдачи
+        Reporter.log("Check search query in page title");
+        Assert.assertTrue(driver.getTitle().contains(searchQuery));
 
+    }
     @AfterSuite
     public void closeAll()
     {
         driver.quit();
     }
-
 }

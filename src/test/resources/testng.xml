@@ -3,7 +3,8 @@
 <suite name="Suite1" verbose="1" >
     <test name="Nopackage" >
         <classes>
-            <class name="MainTest" />
+            <class name="MainTest"/>
+            <class name="CountOfLinks"/>
         </classes>
     </test>
 </suite>
