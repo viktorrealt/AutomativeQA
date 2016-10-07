@@ -21,7 +21,6 @@ public class CleanUrl {
 
     public String GetCleanUrl(String url)
     {
-        String result = this.makeURL(url);
-        return result;
+        return makeURL(url);
     }
 }
