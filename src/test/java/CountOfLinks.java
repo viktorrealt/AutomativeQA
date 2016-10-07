@@ -24,14 +24,14 @@ public class CountOfLinks {
     @DataProvider
     public Object[][] getData()
     {
-        Reporter.log("Collect Data to DataProvider");
+        log("Collect Data to DataProvider");
         FileParsing fileParsing = new FileParsing();
         return fileParsing.getParams();
     }
     @BeforeSuite
     public void setUp()
     {
-        Reporter.log("Initialize Firefox Driver");
+        log("Initialize Firefox Driver");
         driver = new FirefoxDriver();
     }
 
@@ -53,7 +53,7 @@ public class CountOfLinks {
                 return webDriver.getTitle().contains(searchQuery);
             }
         });
-        Reporter.log("sout page title");
+        log("sout page title");
         String title = driver.getTitle();
         System.out.println(title);
 
@@ -66,9 +66,9 @@ public class CountOfLinks {
         for (WebElement s: searchResults)
         {
             counter++;
-            Reporter.log("Count of results");
+            log("Count of results");
         }
-        Reporter.log("Check count of search query in results title");
+        log("Check count of search query in results title");
         Assert.assertEquals(resultsPerPage, counter); //проверяем наличие 10 ключевых слов в заголовках поисковой выдачи
 
     }
@@ -76,5 +76,10 @@ public class CountOfLinks {
     public void closeAll()
     {
         driver.quit();
+    }
+
+    private void log(String s)
+    {
+        Reporter.log(s + "<br>");
     }
 }

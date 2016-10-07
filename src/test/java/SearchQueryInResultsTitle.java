@@ -24,21 +24,20 @@ public class SearchQueryInResultsTitle {
     @DataProvider
     public Object[][] getData()
     {
-        Reporter.log("Collect Data to DataProvider");
+        log("Collect Data to DataProvider");
         FileParsing fileParsing = new FileParsing();
         return fileParsing.getParams();
     }
     @BeforeSuite
     public void setUp()
     {
-        Reporter.log("Initialize Firefox Driver");
+        log("Initialize Firefox Driver");
         driver = new FirefoxDriver();
     }
 
     @Test(dataProvider="getData")
     public void checkResultsCount (String url, final String searchQuery)
     {
-        int resultsPerPage = 10;
         driver.navigate().to(url);
         By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
         WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
@@ -53,7 +52,7 @@ public class SearchQueryInResultsTitle {
                 return webDriver.getTitle().contains(searchQuery);
             }
         });
-        Reporter.log("sout page title");
+        log("sout page title");
         String title = driver.getTitle();
         System.out.println(title);
 
@@ -64,14 +63,19 @@ public class SearchQueryInResultsTitle {
         searchResults = (driver.findElements(By.cssSelector(linkCssPattern)));
         for (WebElement s: searchResults)
         {
-            Reporter.log("Check search query in results text");
+            log("Check search query in results text");
             Assert.assertTrue(s.getText().contains(searchQuery));
         }
-        Reporter.log("Check count of search query in results title");
+        log("Check count of search query in results title");
     }
     @AfterSuite
     public void closeAll()
     {
         driver.quit();
+    }
+
+    private void log(String s)
+    {
+        Reporter.log(s + "<br>");
     }
 }

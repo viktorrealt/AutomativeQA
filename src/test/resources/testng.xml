@@ -7,6 +7,7 @@
             <class name="CountOfLinks"/>
             <class name="QueryInPageTitle"/>
             <class name="SearchQueryInResultsTitle"/>
+            <class name="LessonFourChrome"/>
         </classes>
     </test>
 </suite>

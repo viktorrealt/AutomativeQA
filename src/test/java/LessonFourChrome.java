@@ -1,70 +1,81 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.Reporter;
-import org.testng.annotations.*;
+import org.testng.SkipException;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
 /**
- * Created by admin on 10/3/16.
+ * Created by admin on 10/7/16.
  */
-public class MainTest {
+public class LessonFourChrome {
     WebDriver driver;
-    String linkCssPattern = "html body div#b_content ol#b_results li.b_algo h2";
+    String relatedSearchesPattern = "html body div#b_content ol#b_context li.b_ans ul.b_vList li a strong";
+
     @DataProvider
     public Object[][] getData()
     {
-        log("Collect Data to DataProvider");
+        Reporter.log("Collect Data to DataProvider");
         FileParsing fileParsing = new FileParsing();
         return fileParsing.getParams();
     }
-    @BeforeSuite
+
+    @BeforeTest
     public void setUp()
     {
-        log("Initialize Firefox Driver");
-        driver = new FirefoxDriver();
+        //get param chrome.executable from pom.xml
+        String driverPath = System.getProperty("driver.executable");
+        if (driverPath == null)
+            throw new SkipException("Path to chrome doesn't found");
+        System.setProperty("webdriver.chrome.driver", driverPath);
+
+        driver = new ChromeDriver();
     }
+
     @Test(dataProvider="getData")
-    public void testMain(String url, final String searchQuery) throws Exception
-    {
-        log("Open URL " + url);
+    public void checkRelatedSearches(String url, final String searchQuery) throws Exception{
+
+
+        log("Open main page");
         driver.navigate().to(url);
-        log("Try to find search field by name");
+        log("Find input field");
         By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
         WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
+        log("Clear input field");
         input.clear(); // очищаем поле ввода
-        log("Send search query " + searchQuery);
+        log("Send search query");
         input.sendKeys(searchQuery);
+        log("Find search button");
         WebElement searchButton = driver.findElement(By.name("go"));
-        log("Click search button");
+        log("Click on button");
         searchButton.click();
-
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver webDriver){
                 return webDriver.getTitle().contains(searchQuery);
             }
         });
-
-        String title = driver.getTitle();
-        log("sout page title");
-        System.out.println(title);
-
-
         wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
-
-        List<WebElement> searchResults;
-        searchResults = (driver.findElements(By.cssSelector(linkCssPattern)));
-        for (WebElement s: searchResults)
+        List<WebElement> relatedSearchResults;
+        relatedSearchResults = (driver.findElements(By.cssSelector(relatedSearchesPattern)));
+        int count = 0;
+        for (WebElement s: relatedSearchResults)
         {
-            System.out.println(s.getText());
+            count++;
+            log("Count of links in related search results " + count);
+            Assert.assertTrue(s.getText().length() > 0);
         }
+
     }
 
     @AfterSuite
@@ -77,5 +88,4 @@ public class MainTest {
     {
         Reporter.log(s + "<br>");
     }
-
 }

@@ -20,19 +20,18 @@ import java.util.List;
 public class QueryInPageTitle {
 
     WebDriver driver;
-    String linkCssPattern = "html body div#b_content ol#b_results li.b_algo h2";
 
     @DataProvider
     public Object[][] getData()
     {
-        Reporter.log("Collect Data to DataProvider");
+        log("Collect Data to DataProvider");
         FileParsing fileParsing = new FileParsing();
         return fileParsing.getParams();
     }
     @BeforeSuite
     public void setUp()
     {
-        Reporter.log("Initialize Firefox Driver");
+        log("Initialize Firefox Driver");
         driver = new FirefoxDriver();
     }
 
@@ -53,13 +52,13 @@ public class QueryInPageTitle {
                 return webDriver.getTitle().contains(searchQuery);
             }
         });
-        Reporter.log("sout page title");
+        log("sout page title");
         String title = driver.getTitle();
         System.out.println(title);
 
         wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
 
-        Reporter.log("Check search query in page title");
+        log("Check search query in page title");
         Assert.assertTrue(driver.getTitle().contains(searchQuery));
 
     }
@@ -67,5 +66,10 @@ public class QueryInPageTitle {
     public void closeAll()
     {
         driver.quit();
+    }
+
+    private void log(String s)
+    {
+        Reporter.log(s + "<br>");
     }
 }

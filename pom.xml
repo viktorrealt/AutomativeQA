@@ -28,9 +28,13 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
+                    <parallel>all</parallel>
+                    <systemPropertyVariables>
+                        <driver.executable>${project.build.testOutputDirectory}${file.separator}chromedriver</driver.executable>
+                    </systemPropertyVariables>
                     <workingDirectory>target/</workingDirectory>
                     <suiteXmlFiles>
-                        <suiteXmlFile>${project.build.testOutputDirectory}/testng.xml</suiteXmlFile>
+                        <suiteXmlFile>${project.build.testOutputDirectory}${file.separator}testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
