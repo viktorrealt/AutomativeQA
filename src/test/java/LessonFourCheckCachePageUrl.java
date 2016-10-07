@@ -12,10 +12,7 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Ириша on 08.10.2016.
@@ -94,6 +91,17 @@ public class LessonFourCheckCachePageUrl {
             finalList.put(i1.next(), i2.next().getText());
         }
 
+        for(Map.Entry<String, String> entry: finalList.entrySet())
+        {
+            String cacheurl = entry.getKey();
+            String urlname = entry.getValue();
+            driver.navigate().to(cacheurl);
+            WebElement onCachePaheUrl = driver.findElement(By.cssSelector("div.b_vPanel div strong a"));
+            log("Bing URL: " + urlname);
+            log("Cache URL: " + onCachePaheUrl.getText());
+            Assert.assertTrue(onCachePaheUrl.getText().contains(urlname));
+
+        }
 
 /*        System.out.println(cachedUrls.get(1));
         System.out.println(haspopup.get(1).getText());*/
