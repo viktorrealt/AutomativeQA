@@ -1,3 +1,1 @@
 http://bing.com;automative
-http://bing.com;manual
-http://bing.com;lesson

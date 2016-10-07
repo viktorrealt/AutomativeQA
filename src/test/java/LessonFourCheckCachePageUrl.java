@@ -13,16 +13,19 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by Ириша on 08.10.2016.
  */
-public class LesonFourCheckCachePageUrl {
+public class LessonFourCheckCachePageUrl {
 
     WebDriver driver;
     String searchResultsPattern = "li.b_algo div.b_title h2";
     CleanUrl clean = new CleanUrl();
+
     @DataProvider
     public Object[][] getData()
     {
@@ -34,7 +37,6 @@ public class LesonFourCheckCachePageUrl {
     @BeforeTest
     public void setUp()
     {
-        //get param chrome.executable from pom.xml
         String driverPath = System.getProperty("chrome.executable");
         if (driverPath == null)
             throw new SkipException("Path to chrome doesn't found");
@@ -44,7 +46,7 @@ public class LesonFourCheckCachePageUrl {
     }
 
     @org.testng.annotations.Test(dataProvider="getData")
-    public void checkResultUrls(String url, final String searchQuery) throws Exception {
+    public void checkCachePagesUrls(String url, final String searchQuery) throws Exception {
 
 
         log("Open main page");
@@ -75,25 +77,26 @@ public class LesonFourCheckCachePageUrl {
             log("Count of links in search results " + count);
             Assert.assertTrue(s.getText().length() > 0);
         }
-        List<WebElement> searchResultsUrl;
-        searchResultsUrl = driver.findElements(By.cssSelector(".b_caption div.b_attribution cite"));
-        ArrayList<String> cleanUrlResult = new ArrayList<String>();
-        for (WebElement s : searchResultsUrl) {
-            cleanUrlResult.add(clean.GetCleanUrl(s.getText()));
+        List<WebElement> popup = driver.findElements(By.className("c_tlbxTrg")); //Находим список pop-up со ссылкой на кэш
+        List<String> cachedUrls = new ArrayList<String>(); //ссылки на URL в кэше
+        List<WebElement> haspopup = driver.findElements(By.cssSelector(".b_caption div.b_attribution[u] cite"));
+        for (WebElement s : popup) {
+            s.click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.className("c_tlbx")));
+            WebElement temp = driver.findElement(By.cssSelector("div.c_tlbx div a"));
+            cachedUrls.add(temp.getAttribute("href")); //Ссылки на кэшированные страницы
         }
-        for (String s1 : cleanUrlResult)
-        {
-            if (s1.length() > 0 && !s1.equals("null")) {
-                System.out.println(s1);
-                driver.navigate().to(s1);
-                log("Navigate to " + s1);
-                wait.until(ExpectedConditions.urlContains(s1));
-                log("Check " + s1 + " url");
-                Assert.assertTrue(s1.contains(driver.getCurrentUrl().substring(7)));
-            }
-            else
-                log("Not an url" + s1);
+        HashMap<String, String> finalList = new HashMap<String, String>(); //K - CachedUrls V - haspopup.getText();
+
+        Iterator<String> i1 = cachedUrls.iterator(); //Итератор для кешированных URL
+        Iterator<WebElement> i2 = haspopup.iterator(); //Итератор для ссылок
+        while (i1.hasNext() && i2.hasNext()) { //Помещаем в MAP
+            finalList.put(i1.next(), i2.next().getText());
         }
+
+
+/*        System.out.println(cachedUrls.get(1));
+        System.out.println(haspopup.get(1).getText());*/
 
     }
 
