@@ -30,7 +30,10 @@
                 <configuration>
                     <parallel>all</parallel>
                     <systemPropertyVariables>
-                        <chrome.executable>${project.build.testOutputDirectory}${file.separator}chromedriver</chrome.executable>
+                        <opera.executable>${project.build.testOutputDirectory}${file.separator}operadriver.exe</opera.executable>
+                        <edge.executable>${project.build.testOutputDirectory}${file.separator}MicrosoftWebDriver.exe</edge.executable>
+                        <phantomjs.executable>${project.build.testOutputDirectory}${file.separator}phantomjs.exe</phantomjs.executable>
+                        <chrome.executable>${project.build.testOutputDirectory}${file.separator}chromedriver.exe</chrome.executable>
                     </systemPropertyVariables>
                     <workingDirectory>target/</workingDirectory>
                     <suiteXmlFiles>
