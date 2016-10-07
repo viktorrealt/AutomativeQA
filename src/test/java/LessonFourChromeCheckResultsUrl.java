@@ -2,7 +2,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.net.LinuxEphemeralPortRangeDetector;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -20,7 +19,7 @@ import java.util.List;
 public class LessonFourChromeCheckResultsUrl {
     WebDriver driver;
     String searchResultsPattern = "li.b_algo div.b_title h2";
-
+    CleanUrl clean = new CleanUrl();
     @DataProvider
     public Object[][] getData()
     {
@@ -77,7 +76,7 @@ public class LessonFourChromeCheckResultsUrl {
         searchResultsUrl = driver.findElements(By.cssSelector(".b_caption div.b_attribution cite"));
         ArrayList<String> cleanUrlResult = new ArrayList<String>();
         for (WebElement s : searchResultsUrl) {
-            cleanUrlResult.add(makeURL(s.getText()));
+            cleanUrlResult.add(clean.GetCleanUrl(s.getText()));
         }
         for (String s1 : cleanUrlResult)
         {
@@ -106,20 +105,4 @@ public class LessonFourChromeCheckResultsUrl {
         Reporter.log(s + "<br>");
     }
 
-    private String makeURL(String url) {
-        if (!url.contains("www") && (url.contains("http://") || url.contains("https://")))
-            return url;
-        else if (!url.contains("http://") && url.contains("https://"))
-            return url;
-        else if (!url.contains("https://") && url.contains("http://"))
-            return url;
-        else if (url.contains("https://www") || url.contains("http://www"))
-            return url;
-        else
-        {
-            StringBuilder sb = new StringBuilder(url);
-            sb.insert(0, "http://");
-            return sb.toString();
-        }
-    }
 }
