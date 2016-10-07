@@ -30,7 +30,7 @@
                 <configuration>
                     <parallel>all</parallel>
                     <systemPropertyVariables>
-                        <driver.executable>${project.build.testOutputDirectory}${file.separator}chromedriver</driver.executable>
+                        <chrome.executable>${project.build.testOutputDirectory}${file.separator}chromedriver</chrome.executable>
                     </systemPropertyVariables>
                     <workingDirectory>target/</workingDirectory>
                     <suiteXmlFiles>

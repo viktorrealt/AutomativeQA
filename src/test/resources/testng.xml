@@ -3,11 +3,7 @@
 <suite name="Suite1" verbose="1" >
     <test name="Nopackage" >
         <classes>
-            <class name="MainTest"/>
-            <class name="CountOfLinks"/>
-            <class name="QueryInPageTitle"/>
-            <class name="SearchQueryInResultsTitle"/>
-            <class name="LessonFourChrome"/>
+            <class name="LessonFourChromeClickRandomRelatedResults"/>
         </classes>
     </test>
 </suite>

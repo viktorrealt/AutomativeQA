@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by admin on 10/7/16.
  */
-public class LessonFourChrome {
+public class LessonFourChromeCheckRelatedResults {
     WebDriver driver;
     String relatedSearchesPattern = "html body div#b_content ol#b_context li.b_ans ul.b_vList li a strong";
 
@@ -34,7 +34,7 @@ public class LessonFourChrome {
     public void setUp()
     {
         //get param chrome.executable from pom.xml
-        String driverPath = System.getProperty("driver.executable");
+        String driverPath = System.getProperty("chrome.executable");
         if (driverPath == null)
             throw new SkipException("Path to chrome doesn't found");
         System.setProperty("webdriver.chrome.driver", driverPath);
