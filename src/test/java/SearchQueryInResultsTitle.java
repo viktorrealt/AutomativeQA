@@ -15,9 +15,9 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 /**
- * Created by Ириша on 06.10.2016.
+ * Created by admin on 10/7/16.
  */
-public class CountOfLinks {
+public class SearchQueryInResultsTitle {
     WebDriver driver;
     String linkCssPattern = "html body div#b_content ol#b_results li.b_algo h2";
 
@@ -62,15 +62,12 @@ public class CountOfLinks {
 
         List<WebElement> searchResults;
         searchResults = (driver.findElements(By.cssSelector(linkCssPattern)));
-        int counter = 0;
         for (WebElement s: searchResults)
         {
-            counter++;
-            Reporter.log("Count of results");
+            Reporter.log("Check search query in results text");
+            Assert.assertTrue(s.getText().contains(searchQuery));
         }
         Reporter.log("Check count of search query in results title");
-        Assert.assertEquals(resultsPerPage, counter); //проверяем наличие 10 ключевых слов в заголовках поисковой выдачи
-
     }
     @AfterSuite
     public void closeAll()

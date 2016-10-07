@@ -15,9 +15,10 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 /**
- * Created by Ириша on 06.10.2016.
+ * Created by admin on 10/7/16.
  */
-public class CountOfLinks {
+public class QueryInPageTitle {
+
     WebDriver driver;
     String linkCssPattern = "html body div#b_content ol#b_results li.b_algo h2";
 
@@ -38,7 +39,6 @@ public class CountOfLinks {
     @Test(dataProvider="getData")
     public void checkResultsCount (String url, final String searchQuery)
     {
-        int resultsPerPage = 10;
         driver.navigate().to(url);
         By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
         WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
@@ -57,19 +57,10 @@ public class CountOfLinks {
         String title = driver.getTitle();
         System.out.println(title);
 
-
         wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
 
-        List<WebElement> searchResults;
-        searchResults = (driver.findElements(By.cssSelector(linkCssPattern)));
-        int counter = 0;
-        for (WebElement s: searchResults)
-        {
-            counter++;
-            Reporter.log("Count of results");
-        }
-        Reporter.log("Check count of search query in results title");
-        Assert.assertEquals(resultsPerPage, counter); //проверяем наличие 10 ключевых слов в заголовках поисковой выдачи
+        Reporter.log("Check search query in page title");
+        Assert.assertTrue(driver.getTitle().contains(searchQuery));
 
     }
     @AfterSuite
