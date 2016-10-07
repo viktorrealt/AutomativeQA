@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class LessonFourChromeClickRandomRelatedResults {
     WebDriver driver;
-    String relatedSearchesPattern = "html body div#b_content ol#b_context li.b_ans ul.b_vList li a strong";
+    String relatedSearchesPattern = "/html/body/div[1]/ol[2]/li/ul/li";
 
     @DataProvider
     public Object[][] getData()
@@ -63,9 +63,9 @@ public class LessonFourChromeClickRandomRelatedResults {
                 return webDriver.getTitle().contains(searchQuery);
             }
         });
-        wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.cssSelector(relatedSearchesPattern))));
+        wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.xpath(relatedSearchesPattern))));
         List<WebElement> relatedSearchResults;
-        relatedSearchResults = (driver.findElements(By.cssSelector(relatedSearchesPattern)));
+        relatedSearchResults = (driver.findElements(By.xpath(relatedSearchesPattern)));
         int count = 0;
         for (WebElement s: relatedSearchResults)
         {
@@ -74,14 +74,20 @@ public class LessonFourChromeClickRandomRelatedResults {
             Assert.assertTrue(s.getText().length() > 0);
         }
         Random randomizer = new Random();
-        int random = randomizer.nextInt(5);
+        int random = randomizer.nextInt(relatedSearchResults.size()); //Генерируем рандомное число, не превышающее кол-во ссылок
+        if(random > 0) {
             String relatedLinkText = relatedSearchResults.get(random).getText();
             System.out.println(relatedLinkText);
             relatedSearchResults.get(random).click();
             WebElement searchField = driver.findElement(By.name("q"));
             System.out.println(searchField.getAttribute("value"));
             Assert.assertTrue(relatedLinkText.equals(searchField.getAttribute("value")));
-
+        }
+        else
+        {
+            log("Related links doesn't found");
+            throw new SkipException("Related links doesn't found");
+        }
     }
 
     @AfterSuite
