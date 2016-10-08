@@ -71,7 +71,7 @@ public class LessonFourCheckCachePageUrl {
           try {
               System.out.println(huburl);
               DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-              capabilities.setCapability("phantomjs.binary.path", "test-classes/phantomjs");
+              capabilities.setCapability("phantomjs.binary.path", "phantomjs");
               driver = new RemoteWebDriver(new URL(huburl), capabilities);
           }
           catch (MalformedURLException e)

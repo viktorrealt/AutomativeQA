@@ -1,1 +1,2 @@
-java -jar selenium-server-standalone-2.53.1.jar -role node -hub http://127.0.0.1:4444/grid/register -browser "browserName=chrome,maxInstances=5"  -Dwebdriver.chrome.driver="/Users/admin/IdeaProjects/AutomativeQA/target/test-classes/chromedriver"
+#!/usr/bin/env bash
+java -jar selenium-server-standalone-2.53.1.jar -role node -hub http://127.0.0.1:4444/grid/register -browser "browserName=chrome,maxInstances=5"  -Dwebdriver.chrome.driver="chromedriver" -port 7777

@@ -125,7 +125,7 @@ public class LessonFourChromeClickRandomRelatedResults {
     }
 
     @org.testng.annotations.Test(dataProvider="getData")
-    public void checkRelatedSearches(String url, final String searchQuery) throws Exception{
+    public void checkRelatedRandomResults(String url, final String searchQuery) throws Exception{
 
 
         log("Open main page");
