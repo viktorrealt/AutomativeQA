@@ -4,6 +4,9 @@
     <test name="Nopackage" >
         <classes>
             <class name="LessonFourCheckCachePageUrl"/>
+            <class name="LessonFourChromeClickRandomRelatedResults"/>
+            <class name="LessonFourChromeCheckRelatedResults"/>
+            <class name="LessonFourChromeCheckResultsUrl"/>
         </classes>
     </test>
 </suite>
