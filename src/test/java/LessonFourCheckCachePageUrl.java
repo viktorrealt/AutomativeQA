@@ -21,7 +21,7 @@ public class LessonFourCheckCachePageUrl {
 
     WebDriver driver;
     String searchResultsPattern = "li.b_algo div.b_title h2";
-    CleanUrl clean = new CleanUrl();
+    CheckBrowser checkBrowser = new CheckBrowser();
 
     @DataProvider
     public Object[][] getData()
@@ -102,9 +102,6 @@ public class LessonFourCheckCachePageUrl {
             Assert.assertTrue(onCachePaheUrl.getText().contains(urlname));
 
         }
-
-/*        System.out.println(cachedUrls.get(1));
-        System.out.println(haspopup.get(1).getText());*/
 
     }
 
