@@ -35,10 +35,10 @@
                 <configuration>
                     <parallel>all</parallel>
                     <systemPropertyVariables>
-                        <opera.executable>${project.build.testOutputDirectory}${file.separator}operadriver.exe</opera.executable>
-                        <edge.executable>${project.build.testOutputDirectory}${file.separator}MicrosoftWebDriver.exe</edge.executable>
-                        <phantomjs.executable>${project.build.testOutputDirectory}${file.separator}phantomjs.exe</phantomjs.executable>
-                        <chrome.executable>${project.build.testOutputDirectory}${file.separator}chromedriver.exe</chrome.executable>
+                        <opera.executable>${project.build.testOutputDirectory}${file.separator}operadriver</opera.executable>
+                        <edge.executable>${project.build.testOutputDirectory}${file.separator}MicrosoftWebDriver</edge.executable>
+                        <phantomjs.executable>${project.build.testOutputDirectory}${file.separator}phantomjs</phantomjs.executable>
+                        <chrome.executable>${project.build.testOutputDirectory}${file.separator}chromedriver</chrome.executable>
                     </systemPropertyVariables>
                     <workingDirectory>target/</workingDirectory>
                     <suiteXmlFiles>
