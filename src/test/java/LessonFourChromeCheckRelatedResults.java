@@ -41,7 +41,12 @@ public class LessonFourChromeCheckRelatedResults {
     public void setUp() throws Exception {
         String browser = System.getProperty("browser");
         String huburl = System.getProperty("huburl");
+        String outputdir = System.getProperty("outputdir");
 
+        if (outputdir != null)
+        {
+            System.setProperty("outputDirectory", outputdir);
+        }
         if (huburl == null && browser == null) {
             driver = new FirefoxDriver();
         } else if (huburl == null && !browser.contentEquals("null")) {

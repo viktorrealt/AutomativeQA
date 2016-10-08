@@ -9,6 +9,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.SystemClock;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -42,6 +43,12 @@ public class LessonFourCheckCachePageUrl {
     public void setUp() throws Exception {
         String browser = System.getProperty("browser");
         String huburl = System.getProperty("huburl");
+        String outputdir = System.getProperty("outputdir");
+
+        if (outputdir != null)
+        {
+            System.setProperty("outputDirectory", outputdir);
+        }
 
         if (huburl == null && browser == null) {
             driver = new FirefoxDriver();
