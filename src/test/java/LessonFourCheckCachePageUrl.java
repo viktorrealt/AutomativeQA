@@ -79,7 +79,7 @@ public class LessonFourCheckCachePageUrl {
               e.printStackTrace();
           }
         }
-        else if (huburl != null & browser != null)
+        else if (huburl != null && browser != null)
         {
             if (browser.equals("chrome")) {
                 try {
