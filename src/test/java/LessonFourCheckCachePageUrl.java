@@ -2,6 +2,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -21,7 +24,6 @@ public class LessonFourCheckCachePageUrl {
 
     WebDriver driver;
     String searchResultsPattern = "li.b_algo div.b_title h2";
-    CheckBrowser checkBrowser = new CheckBrowser();
 
     @DataProvider
     public Object[][] getData()
@@ -34,12 +36,34 @@ public class LessonFourCheckCachePageUrl {
     @BeforeTest
     public void setUp()
     {
-        String driverPath = System.getProperty("chrome.executable");
-        if (driverPath == null)
-            throw new SkipException("Path to chrome doesn't found");
-        System.setProperty("webdriver.chrome.driver", driverPath);
+        if (System.getProperty("browser") == null) {
+            driver = new FirefoxDriver();
+        }
+        else  if (System.getProperty("browser").equals("chrome"))
+        {
+            String driverPath = System.getProperty("chrome.executable");
+            if (driverPath == null)
+                throw new SkipException("Path to chrome doesn't found");
+            System.setProperty("webdriver.chrome.driver", driverPath);
+            driver = new ChromeDriver();
+                }
+        else  if (System.getProperty("browser").equals("opera"))
+        {
+            String driverPath = System.getProperty("opera.executable");
+            if (driverPath == null)
+                throw new SkipException("Path to chrome doesn't found");
+            System.setProperty("webdriver.opera.driver", driverPath);
+            driver = new OperaDriver();
+        }
+        else  if (System.getProperty("browser").equals("edge"))
+        {
+            String driverPath = System.getProperty("edge.executable");
+            if (driverPath == null)
+                throw new SkipException("Path to chrome doesn't found");
+            System.setProperty("webdriver.edge.driver", driverPath);
+            driver = new EdgeDriver();
+        }
 
-        driver = new ChromeDriver();
     }
 
     @org.testng.annotations.Test(dataProvider="getData")
