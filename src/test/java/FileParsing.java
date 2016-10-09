@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -19,8 +20,11 @@ public class FileParsing {
 
     private static List<String> readLinesFromFile()
     {
+        Path currentRelativePath = Paths.get("");
+        String dir = currentRelativePath.toAbsolutePath().normalize().toString();
+        System.out.println(dir);
         try {
-            return Files.readAllLines(Paths.get("test-classes/test-data.txt"), Charset.defaultCharset());
+            return Files.readAllLines(Paths.get(dir + "/target/test-classes/test-data.txt"), Charset.defaultCharset());
         } catch (IOException e) {
             e.printStackTrace();
             return Collections.emptyList();
