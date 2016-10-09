@@ -25,16 +25,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by admin on 10/7/16.
- */
+
 public class LessonFourChromeCheckRelatedResults {
-    private WebDriver driver;
-    String relatedSearchesPattern = "html body div#b_content ol#b_context li.b_ans ul.b_vList li a strong";
+
+    private String relatedSearchesPattern = "html body div#b_content ol#b_context li.b_ans ul.b_vList li a strong";
     private String browser = System.getProperty("browser");
     private String huburl = System.getProperty("huburl");
     private String outputdir = System.getProperty("outputdir");
     private String platform = System.getProperty("platform");
+    private SystemProperties sysprop = new SystemProperties();
+    private WebDriver driver = sysprop.driverInitialization(browser, huburl, outputdir, platform);
+    private VerifyMobileView checkMobile = new VerifyMobileView();
     @DataProvider
     public Object[][] getData()
     {
@@ -46,114 +47,6 @@ public class LessonFourChromeCheckRelatedResults {
     @BeforeTest
     public void setUp() throws Exception {
 
-        if (outputdir != null) {
-            System.setProperty("outputDirectory", outputdir);
-        }
-
-        if (huburl == null && browser == null && platform == null) {
-            driver = new FirefoxDriver();
-        } else if (huburl == null && platform == null && !browser.contentEquals("null")) {
-            if (System.getProperty("browser").equals("chrome")) {
-                String driverPath = System.getProperty("chrome.executable");
-                if (driverPath == null)
-                    throw new SkipException("Path to chrome doesn't found");
-                System.setProperty("webdriver.chrome.driver", driverPath);
-                driver = new ChromeDriver();
-            } else if (System.getProperty("browser").equals("opera")) {
-                String driverPath = System.getProperty("opera.executable");
-                if (driverPath == null)
-                    throw new SkipException("Path to chrome doesn't found");
-                System.setProperty("webdriver.opera.driver", driverPath);
-                driver = new OperaDriver();
-            } else if (System.getProperty("browser").equals("edge")) {
-                String driverPath = System.getProperty("edge.executable");
-                if (driverPath == null)
-                    throw new SkipException("Path to chrome doesn't found");
-                System.setProperty("webdriver.edge.driver", driverPath);
-                driver = new EdgeDriver();
-            }
-            else if (System.getProperty("browser").equals("chrome-mobile")) {
-                String driverPath = System.getProperty("chrome.executable");
-                if (driverPath == null)
-                    throw new SkipException("Path to chrome doesn't found");
-                System.setProperty("webdriver.chrome.driver", driverPath);
-                Map<String, String> mobileEmulation = new HashMap<String, String>();
-                mobileEmulation.put("deviceName", "Google Nexus 5");
-
-                Map<String, Object> chromeOptions = new HashMap<String, Object>();
-                chromeOptions.put("mobileEmulation", mobileEmulation);
-                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-                capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-                driver = new ChromeDriver(capabilities);
-            }
-        } else if (huburl != null && browser == null && platform == null) {
-            try {
-                System.out.println(huburl);
-                DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-                capabilities.setCapability("phantomjs.binary.path", "phantomjs");
-                driver = new RemoteWebDriver(new URL(huburl), capabilities);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        } else if (huburl != null && browser != null) {
-            if (browser.equals("chrome")) {
-                try {
-                    DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            } else if (browser.equals("opera")) {
-                try {
-                    DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
-                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            } else if (browser.equals("phantomjs")) {
-                try {
-                    DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-                    capabilities.setCapability("phantomjs.binary.path", "phantomjs");
-                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            } else if (browser.equals("edge")) {
-                try {
-                    DesiredCapabilities capabilities = DesiredCapabilities.edge();
-                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            }
-            else if (System.getProperty("browser").equals("chrome-mobile")) {
-                String driverPath = System.getProperty("chrome.executable");
-                if (driverPath == null)
-                    throw new SkipException("Path to chrome doesn't found");
-                System.setProperty("webdriver.chrome.driver", driverPath);
-                Map<String, String> mobileEmulation = new HashMap<String, String>();
-                mobileEmulation.put("deviceName", "Google Nexus 5");
-
-                Map<String, Object> chromeOptions = new HashMap<String, Object>();
-                chromeOptions.put("mobileEmulation", mobileEmulation);
-                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-                capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-                driver = new ChromeDriver(capabilities);
-            }
-        } else if (platform != null && platform.equals("android"))
-        {
-            log("Initialize RemoteWebDriver");
-            try {
-                DesiredCapabilities capabilities = DesiredCapabilities.android();
-                driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                throw new SkipException("Unable to create RemoteWebdriver instance");
-            }
-        }
-
     }
 
     @Test(dataProvider="getData")
@@ -162,17 +55,26 @@ public class LessonFourChromeCheckRelatedResults {
 
         log("Open main page");
         driver.navigate().to(url);
-        log("Find input field");
-        By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
-        WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
-        log("Clear input field");
-        input.clear(); // очищаем поле ввода
-        log("Send search query");
-        input.sendKeys(searchQuery);
-        log("Find search button");
-        WebElement searchButton = driver.findElement(By.name("go"));
-        log("Click on button");
-        searchButton.click();
+        if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
+            checkMobile.isMobile(driver);
+            log("Find mobile search field");
+            WebElement searchFieldMobile = driver.findElement(By.id("sb_form_q"));
+            searchFieldMobile.clear();
+            searchFieldMobile.sendKeys(searchQuery);
+            searchFieldMobile.submit();
+        }else {
+            log("Find input field");
+            By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
+            WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
+            log("Clear input field");
+            input.clear(); // очищаем поле ввода
+            log("Send search query");
+            input.sendKeys(searchQuery);
+            log("Find search button");
+            WebElement searchButton = driver.findElement(By.name("go"));
+            log("Click on button");
+            searchButton.click();
+        }
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver webDriver){
@@ -181,13 +83,32 @@ public class LessonFourChromeCheckRelatedResults {
         });
         wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
         List<WebElement> relatedSearchResults;
-        relatedSearchResults = (driver.findElements(By.cssSelector(relatedSearchesPattern)));
-        int count = 0;
-        for (WebElement s: relatedSearchResults)
-        {
-            count++;
-            log("Count of links in related search results " + count);
-            Assert.assertTrue(s.getText().length() > 0);
+        if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
+            try
+            {
+                relatedSearchResults = (driver.findElements(By.cssSelector(relatedSearchesPattern)));
+
+            }
+            catch (Exception e)
+            {
+                log("Related search results doesn't find in mobile version");
+                throw new SkipException("Related search results doesn't find in mobile version");
+            }
+            int count = 0;
+            for (WebElement s : relatedSearchResults) {
+                count++;
+                log("Count of links in related search results " + count);
+                Assert.assertTrue(s.getText().length() > 0);
+            }
+        }
+        else {
+            relatedSearchResults = (driver.findElements(By.cssSelector(relatedSearchesPattern)));
+            int count = 0;
+            for (WebElement s : relatedSearchResults) {
+                count++;
+                log("Count of links in related search results " + count);
+                Assert.assertTrue(s.getText().length() > 0);
+            }
         }
 
     }

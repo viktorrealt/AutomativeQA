@@ -2,6 +2,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.opera.OperaDriver;
@@ -18,15 +19,23 @@ import org.testng.annotations.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Created by Ириша on 07.10.2016.
- */
+
 public class LessonFourChromeCheckResultsUrl {
-    WebDriver driver;
-    String searchResultsPattern = "li.b_algo div.b_title h2";
-    CleanUrl clean = new CleanUrl();
+
+    private String searchResultsPattern = "li.b_algo div.b_title h2";
+    private CleanUrl clean = new CleanUrl();
+    private String browser = System.getProperty("browser");
+    private String huburl = System.getProperty("huburl");
+    private String outputdir = System.getProperty("outputdir");
+    private String platform = System.getProperty("platform");
+    private SystemProperties sysprop = new SystemProperties();
+    private WebDriver driver = sysprop.driverInitialization(browser, huburl, outputdir, platform);
+    private VerifyMobileView checkMobile = new VerifyMobileView();
+
     @DataProvider
     public Object[][] getData()
     {
@@ -37,127 +46,33 @@ public class LessonFourChromeCheckResultsUrl {
 
     @BeforeTest
     public void setUp() throws Exception {
-        String browser = System.getProperty("browser");
-        String huburl = System.getProperty("huburl");
-        String outputdir = System.getProperty("outputdir");
-        String platform = System.getProperty("platform");
-        if (outputdir != null)
-        {
-            System.setProperty("outputDirectory", outputdir);
-        }
-        if (huburl == null && browser == null) {
-            driver = new FirefoxDriver();
-        } else if (huburl == null && !browser.contentEquals("null")) {
-            if (System.getProperty("browser").equals("chrome")) {
-                String driverPath = System.getProperty("chrome.executable");
-                if (driverPath == null)
-                    throw new SkipException("Path to chrome doesn't found");
-                System.setProperty("webdriver.chrome.driver", driverPath);
-                driver = new ChromeDriver();
-            } else if (System.getProperty("browser").equals("opera")) {
-                String driverPath = System.getProperty("opera.executable");
-                if (driverPath == null)
-                    throw new SkipException("Path to chrome doesn't found");
-                System.setProperty("webdriver.opera.driver", driverPath);
-                driver = new OperaDriver();
-            } else if (System.getProperty("browser").equals("edge")) {
-                String driverPath = System.getProperty("edge.executable");
-                if (driverPath == null)
-                    throw new SkipException("Path to chrome doesn't found");
-                System.setProperty("webdriver.edge.driver", driverPath);
-                driver = new EdgeDriver();
-            }
-        }
-        else if (huburl != null && browser == null)
-        {
-            try {
-                System.out.println(huburl);
-                DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-                capabilities.setCapability("phantomjs.binary.path", "test-classes/phantomjs");
-                driver = new RemoteWebDriver(new URL(huburl), capabilities);
-            }
-            catch (MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        else if (huburl != null && browser != null)
-        {
-            if (browser.equals("chrome")) {
-                try {
-                    DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            }
-            else if (browser.equals("opera"))
-            {
-                try {
-                    DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
-                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                }
-                catch (MalformedURLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            else if (browser.equals("phantomjs"))
-            {
-                try {
-                    DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-                    capabilities.setCapability("phantomjs.binary.path", "phantomjs");
-                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                }
-                catch (MalformedURLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            else if (browser.equals("edge"))
-            {
-                try {
-                    DesiredCapabilities capabilities = DesiredCapabilities.edge();
-                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                }
-                catch (MalformedURLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }else if (platform != null && platform.equals("android"))
-        {
-            log("Initialize RemoteWebDriver");
-            try {
-                DesiredCapabilities capabilities = DesiredCapabilities.android();
-                driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                throw new SkipException("Unable to create RemoteWebdriver instance");
-            }
-        }
 
     }
 
-    @org.testng.annotations.Test(dataProvider="getData")
+    @Test(dataProvider="getData")
     public void checkResultUrls(String url, final String searchQuery) throws Exception {
-
-
         log("Open main page");
         driver.navigate().to(url);
-        log("Find input field");
-        By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
-        WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
-        log("Clear input field");
-        input.clear(); // очищаем поле ввода
-        log("Send search query");
-        input.sendKeys(searchQuery);
-        log("Find search button");
-        WebElement searchButton = driver.findElement(By.name("go"));
-        log("Click on button");
-        searchButton.click();
+        if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
+            checkMobile.isMobile(driver);
+            log("Find mobile search field");
+            WebElement searchFieldMobile = driver.findElement(By.id("sb_form_q"));
+            searchFieldMobile.clear();
+            searchFieldMobile.sendKeys(searchQuery);
+            searchFieldMobile.submit();
+        }else {
+            log("Find input field");
+            By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
+            WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
+            log("Clear input field");
+            input.clear(); // очищаем поле ввода
+            log("Send search query");
+            input.sendKeys(searchQuery);
+            log("Find search button");
+            WebElement searchButton = driver.findElement(By.name("go"));
+            log("Click on button");
+            searchButton.click();
+        }
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver webDriver) {
