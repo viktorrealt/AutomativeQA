@@ -1,17 +1,22 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.opera.OperaDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.SkipException;
+import org.testng.annotations.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -28,11 +33,110 @@ public class QueryInPageTitle {
         FileParsing fileParsing = new FileParsing();
         return fileParsing.getParams();
     }
-    @BeforeSuite
-    public void setUp()
-    {
-        log("Initialize Firefox Driver");
-        driver = new FirefoxDriver();
+    @BeforeTest
+    public void setUp() throws Exception {
+        String browser = System.getProperty("browser");
+        String huburl = System.getProperty("huburl");
+        String outputdir = System.getProperty("outputdir");
+        String platform = System.getProperty("platform");
+        if (outputdir != null)
+        {
+            System.setProperty("outputDirectory", outputdir);
+        }
+        if (huburl == null && browser == null) {
+            driver = new FirefoxDriver();
+        } else if (huburl == null && !browser.contentEquals("null")) {
+            if (System.getProperty("browser").equals("chrome")) {
+                String driverPath = System.getProperty("chrome.executable");
+                if (driverPath == null)
+                    throw new SkipException("Path to chrome doesn't found");
+                System.setProperty("webdriver.chrome.driver", driverPath);
+                driver = new ChromeDriver();
+            } else if (System.getProperty("browser").equals("opera")) {
+                String driverPath = System.getProperty("opera.executable");
+                if (driverPath == null)
+                    throw new SkipException("Path to chrome doesn't found");
+                System.setProperty("webdriver.opera.driver", driverPath);
+                driver = new OperaDriver();
+            } else if (System.getProperty("browser").equals("edge")) {
+                String driverPath = System.getProperty("edge.executable");
+                if (driverPath == null)
+                    throw new SkipException("Path to chrome doesn't found");
+                System.setProperty("webdriver.edge.driver", driverPath);
+                driver = new EdgeDriver();
+            }
+        }
+        else if (huburl != null && browser == null)
+        {
+            try {
+                System.out.println(huburl);
+                DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+                capabilities.setCapability("phantomjs.binary.path", "test-classes/phantomjs");
+                driver = new RemoteWebDriver(new URL(huburl), capabilities);
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else if (huburl != null && browser != null)
+        {
+            if (browser.equals("chrome")) {
+                try {
+                    DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (browser.equals("opera"))
+            {
+                try {
+                    DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
+                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
+                }
+                catch (MalformedURLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            else if (browser.equals("phantomjs"))
+            {
+                try {
+                    DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+                    capabilities.setCapability("phantomjs.binary.path", "phantomjs");
+                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
+                }
+                catch (MalformedURLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            else if (browser.equals("edge"))
+            {
+                try {
+                    DesiredCapabilities capabilities = DesiredCapabilities.edge();
+                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
+                }
+                catch (MalformedURLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }else if (platform != null && platform.equals("android"))
+        {
+            log("Initialize RemoteWebDriver");
+            try {
+                DesiredCapabilities capabilities = DesiredCapabilities.android();
+                driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                throw new SkipException("Unable to create RemoteWebdriver instance");
+            }
+        }
+
     }
 
     @Test(dataProvider="getData")

@@ -2,6 +2,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.opera.OperaDriver;
@@ -14,10 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.SkipException;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.DataProvider;
+import org.testng.annotations.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,8 +26,12 @@ import java.util.*;
  */
 public class LessonFourCheckCachePageUrl {
 
-    WebDriver driver;
-    String searchResultsPattern = "li.b_algo div.b_title h2";
+    private WebDriver driver;
+    private String searchResultsPattern = "li.b_algo div.b_title h2";
+    private String browser = System.getProperty("browser");
+    private String huburl = System.getProperty("huburl");
+    private String outputdir = System.getProperty("outputdir");
+    private String platform = System.getProperty("platform");
 
     @DataProvider
     public Object[][] getData()
@@ -41,18 +43,14 @@ public class LessonFourCheckCachePageUrl {
 
     @BeforeTest
     public void setUp() throws Exception {
-        String browser = System.getProperty("browser");
-        String huburl = System.getProperty("huburl");
-        String outputdir = System.getProperty("outputdir");
 
-        if (outputdir != null)
-        {
+        if (outputdir != null) {
             System.setProperty("outputDirectory", outputdir);
         }
 
-        if (huburl == null && browser == null) {
+        if (huburl == null && browser == null && platform == null) {
             driver = new FirefoxDriver();
-        } else if (huburl == null && !browser.contentEquals("null")) {
+        } else if (huburl == null && platform == null && !browser.contentEquals("null")) {
             if (System.getProperty("browser").equals("chrome")) {
                 String driverPath = System.getProperty("chrome.executable");
                 if (driverPath == null)
@@ -72,22 +70,30 @@ public class LessonFourCheckCachePageUrl {
                 System.setProperty("webdriver.edge.driver", driverPath);
                 driver = new EdgeDriver();
             }
-        }
-        else if (huburl != null && browser == null)
-        {
-          try {
-              System.out.println(huburl);
-              DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-              capabilities.setCapability("phantomjs.binary.path", "phantomjs");
-              driver = new RemoteWebDriver(new URL(huburl), capabilities);
-          }
-          catch (MalformedURLException e)
-          {
-              e.printStackTrace();
-          }
-        }
-        else if (huburl != null && browser != null)
-        {
+            else if (System.getProperty("browser").equals("chrome-mobile")) {
+                String driverPath = System.getProperty("chrome.executable");
+                if (driverPath == null)
+                    throw new SkipException("Path to chrome doesn't found");
+                System.setProperty("webdriver.chrome.driver", driverPath);
+                Map<String, String> mobileEmulation = new HashMap<String, String>();
+                mobileEmulation.put("deviceName", "Google Nexus 5");
+
+                Map<String, Object> chromeOptions = new HashMap<String, Object>();
+                chromeOptions.put("mobileEmulation", mobileEmulation);
+                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+                driver = new ChromeDriver(capabilities);
+            }
+        } else if (huburl != null && browser == null && platform == null) {
+            try {
+                System.out.println(huburl);
+                DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+                capabilities.setCapability("phantomjs.binary.path", "phantomjs");
+                driver = new RemoteWebDriver(new URL(huburl), capabilities);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        } else if (huburl != null && browser != null) {
             if (browser.equals("chrome")) {
                 try {
                     DesiredCapabilities capabilities = DesiredCapabilities.chrome();
@@ -95,62 +101,85 @@ public class LessonFourCheckCachePageUrl {
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-            }
-            else if (browser.equals("opera"))
-                {
-                    try {
-                        DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
-                        driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                    }
-                    catch (MalformedURLException e)
-                    {
-                        e.printStackTrace();
-                    }
+            } else if (browser.equals("opera")) {
+                try {
+                    DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
+                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
-            else if (browser.equals("phantomjs"))
-                {
-                    try {
-                        DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-                        capabilities.setCapability("phantomjs.binary.path", "phantomjs");
-                        driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                    }
-                    catch (MalformedURLException e)
-                    {
-                        e.printStackTrace();
-                    }
+            } else if (browser.equals("phantomjs")) {
+                try {
+                    DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+                    capabilities.setCapability("phantomjs.binary.path", "phantomjs");
+                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
-                else if (browser.equals("edge"))
-                {
-                    try {
-                        DesiredCapabilities capabilities = DesiredCapabilities.edge();
-                        driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                    }
-                    catch (MalformedURLException e)
-                    {
-                        e.printStackTrace();
-                    }
+            } else if (browser.equals("edge")) {
+                try {
+                    DesiredCapabilities capabilities = DesiredCapabilities.edge();
+                    driver = new RemoteWebDriver(new URL(huburl), capabilities);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
             }
+            else if (System.getProperty("browser").equals("chrome-mobile")) {
+                String driverPath = System.getProperty("chrome.executable");
+                if (driverPath == null)
+                    throw new SkipException("Path to chrome doesn't found");
+                System.setProperty("webdriver.chrome.driver", driverPath);
+                Map<String, String> mobileEmulation = new HashMap<String, String>();
+                mobileEmulation.put("deviceName", "Google Nexus 5");
+
+                Map<String, Object> chromeOptions = new HashMap<String, Object>();
+                chromeOptions.put("mobileEmulation", mobileEmulation);
+                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+                driver = new ChromeDriver(capabilities);
+            }
+        } else if (platform != null && platform.equals("android"))
+        {
+            log("Initialize RemoteWebDriver");
+            try {
+                DesiredCapabilities capabilities = DesiredCapabilities.android();
+                driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                throw new SkipException("Unable to create RemoteWebdriver instance");
+            }
+        }
 
         }
 
-    @org.testng.annotations.Test(dataProvider="getData")
+    @Test(dataProvider="getData")
     public void checkCachePagesUrls(String url, final String searchQuery) throws Exception {
 
 
         log("Open main page");
         driver.navigate().to(url);
-        log("Find input field");
-        By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
-        WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
-        log("Clear input field");
-        input.clear(); // очищаем поле ввода
-        log("Send search query");
-        input.sendKeys(searchQuery);
-        log("Find search button");
-        WebElement searchButton = driver.findElement(By.name("go"));
-        log("Click on button");
-        searchButton.click();
+        if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
+            log("Find mobile search field");
+            WebElement searchFieldMobile = driver.findElement(By.id("sb_form_q"));
+            searchFieldMobile.clear();
+            searchFieldMobile.sendKeys(searchQuery);
+            searchFieldMobile.submit();
+        } else {
+            log("Find input field");
+            By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
+            WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
+            log("Clear input field");
+            input.clear(); // очищаем поле ввода
+            log("Send search query");
+            input.sendKeys(searchQuery);
+            log("Find search button");
+            WebElement searchButton = driver.findElement(By.name("go"));
+            log("Click on button");
+            searchButton.click();
+        }
+
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver webDriver) {
@@ -166,35 +195,39 @@ public class LessonFourCheckCachePageUrl {
             log("Count of links in search results " + count);
             Assert.assertTrue(s.getText().length() > 0);
         }
-        List<WebElement> popup = driver.findElements(By.className("c_tlbxTrg")); //Находим список pop-up со ссылкой на кэш
-        List<String> cachedUrls = new ArrayList<String>(); //ссылки на URL в кэше
-        List<WebElement> haspopup = driver.findElements(By.cssSelector(".b_caption div.b_attribution[u] cite"));
-        for (WebElement s : popup) {
-            s.click();
-            wait.until(ExpectedConditions.elementToBeClickable(By.className("c_tlbx")));
-            WebElement temp = driver.findElement(By.cssSelector("div.c_tlbx div a"));
-            cachedUrls.add(temp.getAttribute("href")); //Ссылки на кэшированные страницы
+        if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
+            log("Check for toolbox with link to cached version");
+            Assert.assertTrue(driver.findElement(By.className("c_tlbxTrg")).isDisplayed());
+        } else {
+            List<WebElement> popup = driver.findElements(By.className("c_tlbxTrg")); //Находим список pop-up со ссылкой на кэш
+            List<String> cachedUrls = new ArrayList<String>(); //ссылки на URL в кэше
+            List<WebElement> haspopup = driver.findElements(By.cssSelector(".b_caption div.b_attribution[u] cite"));
+            for (WebElement s : popup) {
+                s.click();
+                wait.until(ExpectedConditions.elementToBeClickable(By.className("c_tlbx")));
+                WebElement temp = driver.findElement(By.cssSelector("div.c_tlbx div a"));
+                cachedUrls.add(temp.getAttribute("href")); //Ссылки на кэшированные страницы
+            }
+            HashMap<String, String> finalList = new HashMap<String, String>(); //K - CachedUrls V - haspopup.getText();
+
+            Iterator<String> i1 = cachedUrls.iterator(); //Итератор для кешированных URL
+            Iterator<WebElement> i2 = haspopup.iterator(); //Итератор для ссылок
+            while (i1.hasNext() && i2.hasNext()) { //Помещаем в MAP
+                finalList.put(i1.next(), i2.next().getText());
+            }
+
+            for (Map.Entry<String, String> entry : finalList.entrySet()) {
+                String cacheurl = entry.getKey();
+                String urlname = entry.getValue();
+                driver.navigate().to(cacheurl);
+                WebElement onCachePaheUrl = driver.findElement(By.cssSelector("div.b_vPanel div strong a"));
+                log("Bing URL: " + urlname);
+                log("Cache URL: " + onCachePaheUrl.getText());
+                Assert.assertTrue(onCachePaheUrl.getText().contains(urlname));
+
+            }
+
         }
-        HashMap<String, String> finalList = new HashMap<String, String>(); //K - CachedUrls V - haspopup.getText();
-
-        Iterator<String> i1 = cachedUrls.iterator(); //Итератор для кешированных URL
-        Iterator<WebElement> i2 = haspopup.iterator(); //Итератор для ссылок
-        while (i1.hasNext() && i2.hasNext()) { //Помещаем в MAP
-            finalList.put(i1.next(), i2.next().getText());
-        }
-
-        for(Map.Entry<String, String> entry: finalList.entrySet())
-        {
-            String cacheurl = entry.getKey();
-            String urlname = entry.getValue();
-            driver.navigate().to(cacheurl);
-            WebElement onCachePaheUrl = driver.findElement(By.cssSelector("div.b_vPanel div strong a"));
-            log("Bing URL: " + urlname);
-            log("Cache URL: " + onCachePaheUrl.getText());
-            Assert.assertTrue(onCachePaheUrl.getText().contains(urlname));
-
-        }
-
     }
 
     @AfterSuite

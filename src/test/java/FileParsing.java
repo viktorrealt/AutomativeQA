@@ -20,7 +20,7 @@ public class FileParsing {
     private static List<String> readLinesFromFile()
     {
         try {
-            return Files.readAllLines(Paths.get("test-classes/test-data.txt"), Charset.defaultCharset());
+            return Files.readAllLines(Paths.get("D:/Coding/Lesson4/src/test/resources/test-data.txt"), Charset.defaultCharset());
         } catch (IOException e) {
             e.printStackTrace();
             return Collections.emptyList();

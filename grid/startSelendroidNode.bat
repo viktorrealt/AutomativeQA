@@ -1,0 +1,1 @@
+java -jar selendroid-standalone-0.17.0-with-dependencies.jar -port 7777

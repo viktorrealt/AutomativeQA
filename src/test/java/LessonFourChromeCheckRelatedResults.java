@@ -2,6 +2,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.opera.OperaDriver;
@@ -20,15 +21,20 @@ import org.testng.annotations.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by admin on 10/7/16.
  */
 public class LessonFourChromeCheckRelatedResults {
-    WebDriver driver;
+    private WebDriver driver;
     String relatedSearchesPattern = "html body div#b_content ol#b_context li.b_ans ul.b_vList li a strong";
-
+    private String browser = System.getProperty("browser");
+    private String huburl = System.getProperty("huburl");
+    private String outputdir = System.getProperty("outputdir");
+    private String platform = System.getProperty("platform");
     @DataProvider
     public Object[][] getData()
     {
@@ -39,17 +45,14 @@ public class LessonFourChromeCheckRelatedResults {
 
     @BeforeTest
     public void setUp() throws Exception {
-        String browser = System.getProperty("browser");
-        String huburl = System.getProperty("huburl");
-        String outputdir = System.getProperty("outputdir");
 
-        if (outputdir != null)
-        {
+        if (outputdir != null) {
             System.setProperty("outputDirectory", outputdir);
         }
-        if (huburl == null && browser == null) {
+
+        if (huburl == null && browser == null && platform == null) {
             driver = new FirefoxDriver();
-        } else if (huburl == null && !browser.contentEquals("null")) {
+        } else if (huburl == null && platform == null && !browser.contentEquals("null")) {
             if (System.getProperty("browser").equals("chrome")) {
                 String driverPath = System.getProperty("chrome.executable");
                 if (driverPath == null)
@@ -69,22 +72,30 @@ public class LessonFourChromeCheckRelatedResults {
                 System.setProperty("webdriver.edge.driver", driverPath);
                 driver = new EdgeDriver();
             }
-        }
-        else if (huburl != null && browser == null)
-        {
+            else if (System.getProperty("browser").equals("chrome-mobile")) {
+                String driverPath = System.getProperty("chrome.executable");
+                if (driverPath == null)
+                    throw new SkipException("Path to chrome doesn't found");
+                System.setProperty("webdriver.chrome.driver", driverPath);
+                Map<String, String> mobileEmulation = new HashMap<String, String>();
+                mobileEmulation.put("deviceName", "Google Nexus 5");
+
+                Map<String, Object> chromeOptions = new HashMap<String, Object>();
+                chromeOptions.put("mobileEmulation", mobileEmulation);
+                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+                driver = new ChromeDriver(capabilities);
+            }
+        } else if (huburl != null && browser == null && platform == null) {
             try {
                 System.out.println(huburl);
                 DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-                capabilities.setCapability("phantomjs.binary.path", "test-classes/phantomjs");
+                capabilities.setCapability("phantomjs.binary.path", "phantomjs");
                 driver = new RemoteWebDriver(new URL(huburl), capabilities);
-            }
-            catch (MalformedURLException e)
-            {
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-        }
-        else if (huburl != null && browser != null)
-        {
+        } else if (huburl != null && browser != null) {
             if (browser.equals("chrome")) {
                 try {
                     DesiredCapabilities capabilities = DesiredCapabilities.chrome();
@@ -92,40 +103,54 @@ public class LessonFourChromeCheckRelatedResults {
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-            }
-            else if (browser.equals("opera"))
-            {
+            } else if (browser.equals("opera")) {
                 try {
                     DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
                     driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                }
-                catch (MalformedURLException e)
-                {
+                } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-            }
-            else if (browser.equals("phantomjs"))
-            {
+            } else if (browser.equals("phantomjs")) {
                 try {
                     DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
                     capabilities.setCapability("phantomjs.binary.path", "phantomjs");
                     driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                }
-                catch (MalformedURLException e)
-                {
+                } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-            }
-            else if (browser.equals("edge"))
-            {
+            } else if (browser.equals("edge")) {
                 try {
                     DesiredCapabilities capabilities = DesiredCapabilities.edge();
                     driver = new RemoteWebDriver(new URL(huburl), capabilities);
-                }
-                catch (MalformedURLException e)
-                {
+                } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
+            }
+            else if (System.getProperty("browser").equals("chrome-mobile")) {
+                String driverPath = System.getProperty("chrome.executable");
+                if (driverPath == null)
+                    throw new SkipException("Path to chrome doesn't found");
+                System.setProperty("webdriver.chrome.driver", driverPath);
+                Map<String, String> mobileEmulation = new HashMap<String, String>();
+                mobileEmulation.put("deviceName", "Google Nexus 5");
+
+                Map<String, Object> chromeOptions = new HashMap<String, Object>();
+                chromeOptions.put("mobileEmulation", mobileEmulation);
+                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+                driver = new ChromeDriver(capabilities);
+            }
+        } else if (platform != null && platform.equals("android"))
+        {
+            log("Initialize RemoteWebDriver");
+            try {
+                DesiredCapabilities capabilities = DesiredCapabilities.android();
+                driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                throw new SkipException("Unable to create RemoteWebdriver instance");
             }
         }
 

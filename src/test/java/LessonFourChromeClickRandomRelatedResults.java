@@ -40,7 +40,7 @@ public class LessonFourChromeClickRandomRelatedResults {
         String browser = System.getProperty("browser");
         String huburl = System.getProperty("huburl");
         String outputdir = System.getProperty("outputdir");
-
+        String platform = System.getProperty("platform");
         if (outputdir != null)
         {
             System.setProperty("outputDirectory", outputdir);
@@ -124,6 +124,18 @@ public class LessonFourChromeClickRandomRelatedResults {
                 {
                     e.printStackTrace();
                 }
+            }
+        }else if (platform != null && platform.equals("android"))
+        {
+            log("Initialize RemoteWebDriver");
+            try {
+                DesiredCapabilities capabilities = DesiredCapabilities.android();
+                driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                throw new SkipException("Unable to create RemoteWebdriver instance");
             }
         }
 

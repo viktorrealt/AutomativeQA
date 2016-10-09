@@ -1,0 +1,15 @@
+{
+  "capabilities": [{
+    "browserName": "android",
+    "maxInstances": 1,
+    "platform": "ANDROID"
+  }],
+  "configuration": {
+    "maxSession": 1,
+    "register": true,
+    "hubHost": "localhost",
+    "hubPort": 4444,
+    "remoteHost": "http://localhost:7777",
+    "proxy": "io.selendroid.grid.SelendroidSessionProxy"
+  }
+}

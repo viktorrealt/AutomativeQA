@@ -3,10 +3,8 @@
 <suite name="Suite1" verbose="1">
     <test name="Nopackage" >
         <classes>
+            <class name="AndroidVerifyPageIsMobile"/>
             <class name="LessonFourCheckCachePageUrl"/>
-            <class name="LessonFourChromeClickRandomRelatedResults"/>
-            <class name="LessonFourChromeCheckRelatedResults"/>
-            <class name="LessonFourChromeCheckResultsUrl"/>
         </classes>
     </test>
 </suite>
