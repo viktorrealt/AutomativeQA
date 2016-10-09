@@ -2,7 +2,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.opera.OperaDriver;
@@ -14,21 +13,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.SkipException;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 
-
-public class LessonFourChromeCheckRelatedResults {
-
-    private String relatedSearchesPattern = "html body div#b_content ol#b_context li.b_ans ul.b_vList li a strong";
+public class ClickRandomRelatedResults {
+    private String relatedSearchesPattern = "/html/body/div[1]/ol[2]/li/ul/li";
     private String browser = System.getProperty("browser");
     private String huburl = System.getProperty("huburl");
     private String outputdir = System.getProperty("outputdir");
@@ -50,11 +43,7 @@ public class LessonFourChromeCheckRelatedResults {
     }
 
     @Test(dataProvider="getData")
-    public void checkRelatedSearches(String url, final String searchQuery) throws Exception{
-
-
-        log("Open main page");
-        driver.navigate().to(url);
+    public void checkRelatedRandomResults(String url, final String searchQuery) throws Exception{
         if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
             checkMobile.isMobile(driver);
             log("Find mobile search field");
@@ -63,6 +52,8 @@ public class LessonFourChromeCheckRelatedResults {
             searchFieldMobile.sendKeys(searchQuery);
             searchFieldMobile.submit();
         }else {
+            log("Open main page");
+            driver.navigate().to(url);
             log("Find input field");
             By inputLocator = By.name("q"); //Создаем локатор поиска по тэгу name
             WebElement input = driver.findElement(inputLocator); //Создаем WebElement и передаем ему inputlocator в качестве параметра
@@ -81,7 +72,7 @@ public class LessonFourChromeCheckRelatedResults {
                 return webDriver.getTitle().contains(searchQuery);
             }
         });
-        wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
+        wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.xpath(relatedSearchesPattern))));
         List<WebElement> relatedSearchResults;
         if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
             try
@@ -102,15 +93,27 @@ public class LessonFourChromeCheckRelatedResults {
             }
         }
         else {
-            relatedSearchResults = (driver.findElements(By.cssSelector(relatedSearchesPattern)));
+            relatedSearchResults = (driver.findElements(By.xpath(relatedSearchesPattern)));
             int count = 0;
             for (WebElement s : relatedSearchResults) {
                 count++;
                 log("Count of links in related search results " + count);
                 Assert.assertTrue(s.getText().length() > 0);
             }
+            Random randomizer = new Random();
+            int random = randomizer.nextInt(relatedSearchResults.size()); //Генерируем рандомное число, не превышающее кол-во ссылок
+            if (random > 0) {
+                String relatedLinkText = relatedSearchResults.get(random).getText();
+                System.out.println(relatedLinkText);
+                relatedSearchResults.get(random).click();
+                WebElement searchField = driver.findElement(By.name("q"));
+                System.out.println(searchField.getAttribute("value"));
+                Assert.assertTrue(relatedLinkText.equals(searchField.getAttribute("value")));
+            } else {
+                log("Related links doesn't found");
+                throw new SkipException("Related links doesn't found");
+            }
         }
-
     }
 
     @AfterSuite

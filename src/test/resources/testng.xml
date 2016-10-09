@@ -4,8 +4,9 @@
     <test name="Nopackage" >
         <classes>
             <class name="VerifyMobileView"/>
-            <class name="LessonFourCheckCachePageUrl"/>
-            <class name="LessonFourChromeCheckRelatedResults"/>
+            <class name="CheckCachePageUrl"/>
+            <class name="CheckRelatedResults"/>
+            <class name="CheckResultsUrl"/>
         </classes>
     </test>
 </suite>

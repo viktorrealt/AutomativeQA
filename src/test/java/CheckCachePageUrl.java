@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.*;
 
 
-public class LessonFourCheckCachePageUrl {
+public class CheckCachePageUrl {
 
     private String searchResultsPattern = "li.b_algo div.b_title h2";
     private String browser = System.getProperty("browser");

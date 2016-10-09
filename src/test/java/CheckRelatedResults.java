@@ -1,33 +1,22 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.opera.OperaDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.SkipException;
-import org.testng.annotations.*;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 import java.util.List;
-import java.util.Map;
 
 
-public class LessonFourChromeCheckResultsUrl {
+public class CheckRelatedResults {
 
-    private String searchResultsPattern = "li.b_algo div.b_title h2";
-    private CleanUrl clean = new CleanUrl();
+    private String relatedSearchesPattern = "html body div#b_content ol#b_context li.b_ans ul.b_vList li a strong";
     private String browser = System.getProperty("browser");
     private String huburl = System.getProperty("huburl");
     private String outputdir = System.getProperty("outputdir");
@@ -35,7 +24,6 @@ public class LessonFourChromeCheckResultsUrl {
     private SystemProperties sysprop = new SystemProperties();
     private WebDriver driver = sysprop.driverInitialization(browser, huburl, outputdir, platform);
     private VerifyMobileView checkMobile = new VerifyMobileView();
-
     @DataProvider
     public Object[][] getData()
     {
@@ -50,7 +38,9 @@ public class LessonFourChromeCheckResultsUrl {
     }
 
     @Test(dataProvider="getData")
-    public void checkResultUrls(String url, final String searchQuery) throws Exception {
+    public void checkRelatedSearches(String url, final String searchQuery) throws Exception{
+
+
         log("Open main page");
         driver.navigate().to(url);
         if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
@@ -75,37 +65,38 @@ public class LessonFourChromeCheckResultsUrl {
         }
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver webDriver) {
+            public Boolean apply(WebDriver webDriver){
                 return webDriver.getTitle().contains(searchQuery);
             }
         });
         wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
-        List<WebElement> searchResults;
-        searchResults = driver.findElements(By.cssSelector(searchResultsPattern));
-        int count = 0;
-        for (WebElement s : searchResults) {
-            count++;
-            log("Count of links in search results " + count);
-            Assert.assertTrue(s.getText().length() > 0);
-        }
-        List<WebElement> searchResultsUrl;
-        searchResultsUrl = driver.findElements(By.cssSelector(".b_caption div.b_attribution cite"));
-        ArrayList<String> cleanUrlResult = new ArrayList<String>();
-        for (WebElement s : searchResultsUrl) {
-            cleanUrlResult.add(clean.GetCleanUrl(s.getText()));
-        }
-        for (String s1 : cleanUrlResult)
-        {
-            if (s1.length() > 0 && !s1.equals("null")) {
-                System.out.println(s1);
-                driver.navigate().to(s1);
-                log("Navigate to " + s1);
-                wait.until(ExpectedConditions.urlContains(s1));
-                log("Check " + s1 + " url");
-                Assert.assertTrue(s1.contains(driver.getCurrentUrl().substring(7)));
+        List<WebElement> relatedSearchResults;
+        if (platform != null && platform.equals("android") || browser != null && browser.equals("chrome-mobile")) {
+            try
+            {
+                relatedSearchResults = (driver.findElements(By.cssSelector(relatedSearchesPattern)));
+
             }
-            else
-                log("Not an url" + s1);
+            catch (Exception e)
+            {
+                log("Related search results doesn't find in mobile version");
+                throw new SkipException("Related search results doesn't find in mobile version");
+            }
+            int count = 0;
+            for (WebElement s : relatedSearchResults) {
+                count++;
+                log("Count of links in related search results " + count);
+                Assert.assertTrue(s.getText().length() > 0);
+            }
+        }
+        else {
+            relatedSearchResults = (driver.findElements(By.cssSelector(relatedSearchesPattern)));
+            int count = 0;
+            for (WebElement s : relatedSearchResults) {
+                count++;
+                log("Count of links in related search results " + count);
+                Assert.assertTrue(s.getText().length() > 0);
+            }
         }
 
     }
@@ -120,5 +111,4 @@ public class LessonFourChromeCheckResultsUrl {
     {
         Reporter.log(s + "<br>");
     }
-
 }
