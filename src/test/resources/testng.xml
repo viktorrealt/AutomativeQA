@@ -3,10 +3,10 @@
 <suite name="Suite1" verbose="1">
     <test name="Nopackage" >
         <classes>
-            <class name="VerifyMobileView"/>
             <class name="CheckCachePageUrl"/>
             <class name="CheckRelatedResults"/>
             <class name="CheckResultsUrl"/>
+            <class name="ClickRandomRelatedResults"/>
         </classes>
     </test>
 </suite>
