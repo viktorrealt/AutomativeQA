@@ -7,12 +7,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.SkipException;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import java.util.List;
-import java.util.Random;
+import org.testng.annotations.*;
+
+import java.util.*;
 
 /**
  * Created by admin on 10/10/16.
@@ -79,9 +76,7 @@ public class Lesson3Test {
                 searchResults = driver.findElements(By.cssSelector(searchResultsPattern));
                 getResultsText(searchResults);
                 goHome(searchQuery, url); //Go to main page and make search query
-                List<WebElement> searchResultsUrl;
-                searchResultsUrl = driver.findElements(By.cssSelector(".b_caption div.b_attribution cite"));
-                getResultsUrls(searchResultsUrl, url);
+                getResultsUrls(searchQuery, url);
             }
             catch (Exception e)
             {
@@ -101,9 +96,7 @@ public class Lesson3Test {
             searchResults = driver.findElements(By.cssSelector(searchResultsPattern));
             getResultsText(searchResults);
             goHome(searchQuery, url); //Go to main page and make search query
-            List<WebElement> searchResultsUrl;
-            searchResultsUrl = driver.findElements(By.cssSelector(".b_caption div.b_attribution cite"));
-            getResultsUrls(searchResultsUrl, url);
+            getResultsUrls(searchQuery, url);
         }
 
     }
@@ -164,23 +157,31 @@ public class Lesson3Test {
         }
     }
 
-    private void getResultsUrls(List<WebElement> searchResultsUrl, String url)
+    private void getResultsUrls(String searchQuery, String url)
     {
-        System.out.println("Size of search result url list: " + searchResultsUrl.size());
-/*        for (int i = 0; i < searchResultsUrl.size(); i++)
-        {
-            WebElement element = driver.findElement(By.xpath("*//*//**//*[@id=\"b_results\"]/li[1]/div[1]/h2/a"));
-            String text = element.getText();
+            List<WebElement> element = driver.findElements(By.cssSelector("#b_results li.b_algo div.b_caption div.b_attribution cite"));
+            List<WebElement> titleURL = driver.findElements(By.cssSelector(searchResultsPattern));
+            Map<WebElement, WebElement> elementTitle = new HashMap<WebElement, WebElement>();
+            Iterator<WebElement> i1 = element.iterator();
+            Iterator<WebElement> i2 = titleURL.iterator();
+        while (i1.hasNext() || i2.hasNext()) elementTitle.put(i1.next(), i2.next());
+        for (Map.Entry <WebElement, WebElement> entry: elementTitle.entrySet()) {
+            String text = entry.getKey().getText();
             System.out.println("text: " + text);
-            //element.click();
-            //element.submit();
-            driver.navigate().to(text);
+            entry.getValue().click();
             WebDriverWait wait = new WebDriverWait(driver, 10);
             wait.until(ExpectedConditions.urlContains(text));
-            System.out.println("URL: " + driver.getCurrentUrl().toLowerCase());
-            Assert.assertTrue(driver.getCurrentUrl().toLowerCase().contains(text.toLowerCase()));
-        }*/
-       for (WebElement s1 : searchResultsUrl)
+            String siteUrl = driver.getCurrentUrl().toLowerCase();
+            System.out.println("CurrentURL: " + siteUrl);
+            Assert.assertTrue(siteUrl.contains(text));
+                if (siteUrl.contains(text))
+                    System.out.println("ok");
+                else
+                    System.out.printf("WTF");
+            goHome(searchQuery, url);
+            wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
+            }
+/*       for (WebElement s1 : searchResultsUrl)
         {
             String text = s1.getText();
             System.out.println(text);
@@ -190,7 +191,7 @@ public class Lesson3Test {
             log("Check " + text + " url");
             Assert.assertTrue(driver.getCurrentUrl().toLowerCase().contains(text.toLowerCase()));
 
-        }
+        }*/
     }
     private void goHome(String searchQuery, String url)
     {
@@ -209,3 +210,4 @@ public class Lesson3Test {
         searchButton.click();
     }
 }
+
