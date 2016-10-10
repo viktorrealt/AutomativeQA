@@ -98,6 +98,8 @@ public class Lesson3Test {
             getResultsText(searchResults);
             goHome(searchQuery, url); //Go to main page and make search query
             getResultsUrls(searchQuery, url);
+            goHome(searchQuery, url); //Go to main page and make search query
+            checkCachedUrls(driver);
         }
 
     }
@@ -164,14 +166,14 @@ public class Lesson3Test {
                 WebElement element = driver.findElement(By.xpath("(//div/cite)[" + i + "]"));
                 WebElement titleURL = driver.findElement(By.xpath("(//ol[*]/li[*]/div[*]/h2/a)[" + i + "]"));
                 WebDriverWait wait = new WebDriverWait(driver, 10);
-                    String text = element.getText();
+                    String text = element.getText().substring(0,20); //Удаляем ... при длинном URL и прочие моменты
                     System.out.println("text: " + text);
                     titleURL.click();
                     wait.until(ExpectedConditions.urlContains(text));
                     String siteUrl = driver.getCurrentUrl().toLowerCase();
                     System.out.println("CurrentURL: " + siteUrl);
-                    Assert.assertTrue(siteUrl.contains(text));
-                    if (siteUrl.contains(text))
+                    Assert.assertTrue(siteUrl.toLowerCase().contains(text.toLowerCase()));
+                    if (siteUrl.toLowerCase().contains(text.toLowerCase()))
                         System.out.println("ok");
                     else
                         System.out.printf("WTF");
@@ -206,6 +208,34 @@ public class Lesson3Test {
         WebElement searchButton = driver.findElement(By.name("go"));
         log("Click on button");
         searchButton.click();
+    }
+
+    private void checkCachedUrls(WebDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        List<WebElement> popup = driver.findElements(By.className("c_tlbxTrg")); //Находим список pop-up со ссылкой на кэш
+        List<String> cachedUrls = new ArrayList<String>(); //ссылки на URL в кэше
+        List<WebElement> haspopup = driver.findElements(By.cssSelector(".b_caption div.b_attribution[u] cite"));
+        for (WebElement s : popup) {
+            s.click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.className("c_tlbx")));
+            WebElement temp = driver.findElement(By.cssSelector("div.c_tlbx div a"));
+            cachedUrls.add(temp.getAttribute("href")); //Ссылки на кэшированные страницы
+        }
+        HashMap<String, String> finalList = new HashMap<String, String>(); //K - CachedUrls V - haspopup.getText();
+
+        Iterator<String> i1 = cachedUrls.iterator(); //Итератор для кешированных URL
+        Iterator<WebElement> i2 = haspopup.iterator(); //Итератор для ссылок
+        while (i1.hasNext() && i2.hasNext()) { //Помещаем в MAP
+            finalList.put(i1.next(), i2.next().getText());
+        }
+
+        for (Map.Entry<String, String> entry : finalList.entrySet()) {
+            String cacheurl = entry.getKey();
+            String urlname = entry.getValue();
+            driver.navigate().to(cacheurl);
+            WebElement onCachePaheUrl = driver.findElement(By.cssSelector("div.b_vPanel div strong a"));
+            Assert.assertTrue(onCachePaheUrl.getText().contains(urlname));
+        }
     }
 }
 
