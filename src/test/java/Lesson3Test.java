@@ -164,12 +164,12 @@ public class Lesson3Test {
             Map<WebElement, WebElement> elementTitle = new HashMap<WebElement, WebElement>();
             Iterator<WebElement> i1 = element.iterator();
             Iterator<WebElement> i2 = titleURL.iterator();
+            WebDriverWait wait = new WebDriverWait(driver, 10);
         while (i1.hasNext() || i2.hasNext()) elementTitle.put(i1.next(), i2.next());
         for (Map.Entry <WebElement, WebElement> entry: elementTitle.entrySet()) {
             String text = entry.getKey().getText();
             System.out.println("text: " + text);
             entry.getValue().click();
-            WebDriverWait wait = new WebDriverWait(driver, 10);
             wait.until(ExpectedConditions.urlContains(text));
             String siteUrl = driver.getCurrentUrl().toLowerCase();
             System.out.println("CurrentURL: " + siteUrl);
