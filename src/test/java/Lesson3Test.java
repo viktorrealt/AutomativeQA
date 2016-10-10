@@ -1,6 +1,7 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.pagefactory.ByAll;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -159,27 +160,24 @@ public class Lesson3Test {
 
     private void getResultsUrls(String searchQuery, String url)
     {
-            List<WebElement> element = driver.findElements(By.cssSelector("#b_results li.b_algo div.b_caption div.b_attribution cite"));
-            List<WebElement> titleURL = driver.findElements(By.cssSelector(searchResultsPattern));
-            Map<WebElement, WebElement> elementTitle = new HashMap<WebElement, WebElement>();
-            Iterator<WebElement> i1 = element.iterator();
-            Iterator<WebElement> i2 = titleURL.iterator();
-            WebDriverWait wait = new WebDriverWait(driver, 10);
-        while (i1.hasNext() || i2.hasNext()) elementTitle.put(i1.next(), i2.next());
-        for (Map.Entry <WebElement, WebElement> entry: elementTitle.entrySet()) {
-            String text = entry.getKey().getText();
-            System.out.println("text: " + text);
-            entry.getValue().click();
-            wait.until(ExpectedConditions.urlContains(text));
-            String siteUrl = driver.getCurrentUrl().toLowerCase();
-            System.out.println("CurrentURL: " + siteUrl);
-            Assert.assertTrue(siteUrl.contains(text));
-                if (siteUrl.contains(text))
-                    System.out.println("ok");
-                else
-                    System.out.printf("WTF");
-            goHome(searchQuery, url);
-            wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
+            for (int i = 5; i <= 13; i++) {
+                WebElement element = driver.findElement(By.xpath("//ol[*]/li[*][@data-bm=" + i + "]/div/div/cite"));
+                WebElement titleURL = driver.findElement(By.xpath("//ol[*]/li[*][@data-bm=" + i + "]/h2/a"));
+                WebDriverWait wait = new WebDriverWait(driver, 10);
+                    String text = element.getText();
+                    System.out.println("text: " + text);
+                    titleURL.click();
+                    wait.until(ExpectedConditions.urlContains(text));
+                    String siteUrl = driver.getCurrentUrl().toLowerCase();
+                    System.out.println("CurrentURL: " + siteUrl);
+                    Assert.assertTrue(siteUrl.contains(text));
+                    if (siteUrl.contains(text))
+                        System.out.println("ok");
+                    else
+                        System.out.printf("WTF");
+                    goHome(searchQuery, url);
+                    wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
+
             }
 /*       for (WebElement s1 : searchResultsUrl)
         {
