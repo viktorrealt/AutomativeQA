@@ -166,7 +166,7 @@ public class Lesson3Test {
                 WebElement element = driver.findElement(By.xpath("(//div/cite)[" + i + "]"));
                 WebElement titleURL = driver.findElement(By.xpath("(//ol[*]/li[*]/div[*]/h2/a)[" + i + "]"));
                 WebDriverWait wait = new WebDriverWait(driver, 10);
-                    String text = element.getText().substring(0,20); //Удаляем ... при длинном URL и прочие моменты
+                    String text = element.getText().substring(0, element.getText().length()-5); //Удаляем ... при длинном URL и прочие моменты
                     System.out.println("text: " + text);
                     titleURL.click();
                     wait.until(ExpectedConditions.urlContains(text));
