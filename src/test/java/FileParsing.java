@@ -24,7 +24,7 @@ public class FileParsing {
         String dir = currentRelativePath.toAbsolutePath().normalize().toString();
         System.out.println(dir);
         try {
-            return Files.readAllLines(Paths.get(dir + "/target/test-classes/test-data.txt"), Charset.defaultCharset());
+            return Files.readAllLines(Paths.get(dir + "/test-classes/test-data.txt"), Charset.defaultCharset());
         } catch (IOException e) {
             e.printStackTrace();
             return Collections.emptyList();
