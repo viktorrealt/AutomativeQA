@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * Created by admin on 10/10/16.
  */
-public class Lesson3Test {
+public class Lesson5 {
     private String relatedSearchesPattern = "#b_context li.b_ans ul.b_vList li a";
     private String searchResultsPattern = "#b_results li.b_algo h2 a";
     private String browser = System.getProperty("browser");
@@ -78,6 +78,8 @@ public class Lesson3Test {
                 getResultsText(searchResults);
                 goHome(searchQuery, url); //Go to main page and make search query
                 getResultsUrls(searchQuery, url);
+                goHome(searchQuery, url); //Go to main page and make search query
+                checkCachedUrls(driver);
             }
             catch (Exception e)
             {
