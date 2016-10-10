@@ -81,7 +81,7 @@ public class Lesson3Test {
                 goHome(searchQuery, url); //Go to main page and make search query
                 List<WebElement> searchResultsUrl;
                 searchResultsUrl = driver.findElements(By.cssSelector(".b_caption div.b_attribution cite"));
-                getResultsUrls(searchResultsUrl);
+                getResultsUrls(searchResultsUrl, url);
             }
             catch (Exception e)
             {
@@ -103,7 +103,7 @@ public class Lesson3Test {
             goHome(searchQuery, url); //Go to main page and make search query
             List<WebElement> searchResultsUrl;
             searchResultsUrl = driver.findElements(By.cssSelector(".b_caption div.b_attribution cite"));
-            getResultsUrls(searchResultsUrl);
+            getResultsUrls(searchResultsUrl, url);
         }
 
     }
@@ -127,7 +127,7 @@ public class Lesson3Test {
             count++;
             log("Count of links in related search results " + count);
             Assert.assertTrue(s.getText().length() > 0);
-            System.out.println("Count of rekated search results: " + count);
+            System.out.println("Count of related search results: " + count);
         }
     }
 
@@ -135,7 +135,10 @@ public class Lesson3Test {
     {
         Random randomizer = new Random();
         int random = randomizer.nextInt(relatedSearchResults.size()); //Генерируем рандомное число, не превышающее кол-во ссылок
-        if (random > 0) {
+        if (random <= 0) {
+            random += 1;
+        }
+        if (random > 0){
             String relatedLinkText = relatedSearchResults.get(random).getText();
             System.out.println(relatedLinkText);
             relatedSearchResults.get(random).click();
@@ -161,10 +164,23 @@ public class Lesson3Test {
         }
     }
 
-    private void getResultsUrls(List<WebElement> searchResultsUrl)
+    private void getResultsUrls(List<WebElement> searchResultsUrl, String url)
     {
         System.out.println("Size of search result url list: " + searchResultsUrl.size());
-        for (WebElement s1 : searchResultsUrl)
+/*        for (int i = 0; i < searchResultsUrl.size(); i++)
+        {
+            WebElement element = driver.findElement(By.xpath("*//*//**//*[@id=\"b_results\"]/li[1]/div[1]/h2/a"));
+            String text = element.getText();
+            System.out.println("text: " + text);
+            //element.click();
+            //element.submit();
+            driver.navigate().to(text);
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.urlContains(text));
+            System.out.println("URL: " + driver.getCurrentUrl().toLowerCase());
+            Assert.assertTrue(driver.getCurrentUrl().toLowerCase().contains(text.toLowerCase()));
+        }*/
+       for (WebElement s1 : searchResultsUrl)
         {
             String text = s1.getText();
             System.out.println(text);
@@ -173,6 +189,7 @@ public class Lesson3Test {
             System.out.println("current url: " + driver.getCurrentUrl());
             log("Check " + text + " url");
             Assert.assertTrue(driver.getCurrentUrl().toLowerCase().contains(text.toLowerCase()));
+
         }
     }
     private void goHome(String searchQuery, String url)
