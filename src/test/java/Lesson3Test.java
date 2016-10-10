@@ -160,9 +160,9 @@ public class Lesson3Test {
 
     private void getResultsUrls(String searchQuery, String url)
     {
-            for (int i = 5; i <= 13; i++) {
-                WebElement element = driver.findElement(By.xpath("//ol[*]/li[*][@data-bm=" + i + "]/div/div/cite"));
-                WebElement titleURL = driver.findElement(By.xpath("//ol[*]/li[*][@data-bm=" + i + "]/h2/a"));
+            for (int i = 1; i <= 10; i++) {
+                WebElement element = driver.findElement(By.xpath("(//div/cite)[" + i + "]"));
+                WebElement titleURL = driver.findElement(By.xpath("(//ol[*]/li[*]/div[*]/h2/a)[" + i + "]"));
                 WebDriverWait wait = new WebDriverWait(driver, 10);
                     String text = element.getText();
                     System.out.println("text: " + text);
