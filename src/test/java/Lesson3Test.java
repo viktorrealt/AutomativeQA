@@ -163,9 +163,9 @@ public class Lesson3Test {
     private void getResultsUrls(String searchQuery, String url)
     {
             for (int i = 1; i <= 10; i++) {
-                WebElement element = driver.findElement(By.xpath("(//div/cite)[" + i + "]"));
-                WebElement titleURL = driver.findElement(By.xpath("(//ol[*]/li[*]/div[*]/h2/a)[" + i + "]"));
-                WebDriverWait wait = new WebDriverWait(driver, 10);
+                WebElement element = driver.findElement(By.xpath("(//li[@class=\"b_algo\"]//div[@class=\"b_attribution\" or @class=\"b_snippet\"]/cite)[" + i + "]")); //Убиться тапком, хуже регулярок
+                WebElement titleURL = driver.findElement(By.xpath("(//li[@class=\"b_algo\"]/div[*]/h2/a)[" + i + "]"));
+                WebDriverWait wait = new WebDriverWait(driver, 30);
                     String text = element.getText().substring(0, element.getText().length()-5); //Удаляем ... при длинном URL и прочие моменты
                     System.out.println("text: " + text);
                     titleURL.click();
@@ -181,7 +181,7 @@ public class Lesson3Test {
                     wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("b_results"))));
 
             }
-/*       for (WebElement s1 : searchResultsUrl)
+/*       for (WebElement s1 : searchResultsUrl)            ////Эта хрень не работает т.к. ищет данные, которые уже не существуют)))
         {
             String text = s1.getText();
             System.out.println(text);
