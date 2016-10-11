@@ -166,7 +166,7 @@ public class Lesson5 {
     {
             for (int i = 1; i <= 10; i++) {
                 WebElement element = driver.findElement(By.xpath("(//li[@class=\"b_algo\"]//div[@class=\"b_attribution\" or @class=\"b_snippet\"]/cite)[" + i + "]")); //Убиться тапком, хуже регулярок
-                WebElement titleURL = driver.findElement(By.xpath("(//li[@class=\"b_algo\"]/div[*]/h2/a)[" + i + "]"));
+                WebElement titleURL = driver.findElement(By.xpath("(//li[@class=\"b_algo\"]//h2/a)[" + i + "]"));
                 WebDriverWait wait = new WebDriverWait(driver, 30);
                     String text = element.getText().substring(0, element.getText().length()-5); //Удаляем ... при длинном URL и прочие моменты
                     System.out.println("text: " + text);
